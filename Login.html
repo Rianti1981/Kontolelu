@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web2APK - Login | KENZMD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #0a1628, #030812);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 45px 35px;
+            border: 1px solid #1e3a5f;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .logo-text {
+            font-size: 30px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .owner-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.08);
+            border-radius: 50px;
+            border: 1px solid #00d4ff33;
+        }
+
+        .owner-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #00d4ff, #0066aa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .owner-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .owner-name {
+            font-weight: 700;
+            color: #00d4ff;
+            font-size: 16px;
+        }
+
+        .owner-role {
+            font-size: 12px;
+            color: #88aacc;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #88aacc;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 18px;
+            background: #0f1a2e;
+            border: 1px solid #1e3a5f;
+            border-radius: 15px;
+            color: #fff;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px #00d4ff33;
+        }
+
+        .input-group input::placeholder {
+            color: #557799;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00d4ff, #0066aa);
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px #00d4ff55;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 25px;
+            color: #88aacc;
+        }
+
+        .links a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            background: #ff446622;
+            color: #ff4466;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #ff446655;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #6688aa;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">📱</div>
+            <div class="logo-text">Web2APK</div>
+        </div>
+
+        <div class="owner-badge">
+            <div class="owner-avatar">K</div>
+            <div class="owner-info">
+                <span class="owner-name">KENZMD</span>
+                <span class="owner-role">Owner • Developer</span>
+            </div>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label>📧 Username</label>
+                <input type="text" id="username" placeholder="Masukkan username" required>
+            </div>
+            <div class="input-group">
+                <label>🔒 Password</label>
+                <input type="password" id="password" placeholder="Masukkan password" required>
+            </div>
+            <button type="submit" class="btn">🚀 LOGIN</button>
+        </form>
+
+        <div class="links">
+            <p>Belum punya akun? <a href="#" onclick="alert('Hubungi @kenzmdtwopoint_o untuk registrasi')">Hubungi Owner</a></p>
+        </div>
+
+        <div class="footer">
+            <p>📞 @kenzmdtwopoint_o • 📢 @testimonikenzmd</p>
+            <p style="margin-top: 10px;">© 2026 Web2APK by KENZMD</p>
+        </div>
+    </div>
+
+    <script>
+        // Dummy credentials (nanti bisa diganti API)
+        const VALID_CREDENTIALS = {
+            'KENZMD': { password: 'kenz123', role: 'owner' },
+            'user1': { password: 'user123', role: 'user' },
+            'admin': { password: 'admin123', role: 'admin' }
+        };
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const user = VALID_CREDENTIALS[username];
+            if (user && user.password === password) {
+                // Simpan session
+                localStorage.setItem('web2apk_user', JSON.stringify({
+                    username: username,
+                    role: user.role,
+                    loginTime: Date.now()
+                }));
+                
+                // Redirect ke dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('❌ Username atau password salah!');
+            }
+        }
+
+        // Cek kalo udah login
+        const savedUser = localStorage.getItem('web2apk_user');
+        if (savedUser) {
+            const user = JSON.parse(savedUser);
+            // Cek expiry (24 jam)
+            if (Date.now() - user.loginTime < 86400000) {
+                window.location.href = 'dashboard.html';
+            } else {
+                localStorage.removeItem('web2apk_user');
+            }
+        }
+    </script>
+</body>
+</html>
