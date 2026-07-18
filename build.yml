@@ -1,0 +1,73 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_type:
+        description: 'flutter atau android'
+        required: true
+        default: 'flutter'
+      build_type:
+        description: 'debug atau release'
+        required: true
+        default: 'release'
+      zip_path:
+        description: 'path zip source di repo'
+        required: true
+        default: 'builds/source.zip'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Unzip source project
+        run: |
+          mkdir -p project
+          unzip -o "${{ github.event.inputs.zip_path }}" -d project
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        if: ${{ github.event.inputs.project_type == 'flutter' }}
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Build Flutter APK
+        if: ${{ github.event.inputs.project_type == 'flutter' }}
+        working-directory: project
+        run: |
+          flutter pub get
+          flutter build apk --${{ github.event.inputs.build_type }}
+
+      - name: Build Android (Gradle) APK
+        if: ${{ github.event.inputs.project_type == 'android' }}
+        working-directory: project
+        run: |
+          chmod +x gradlew
+          if [ "${{ github.event.inputs.build_type }}" = "release" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
+
+      - name: Cari file APK hasil build
+        id: findapk
+        run: |
+          APK_PATH=$(find project -name "*.apk" | head -n 1)
+          echo "APK found at: $APK_PATH"
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+
+      - name: Upload APK sebagai artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-apk
+          path: ${{ steps.findapk.outputs.apk_path }}
+          retention-days: 3
