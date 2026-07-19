@@ -1,53 +1,73 @@
-name: Build Flutter APK
+name: Build APK
 
 on:
-  push:
-    branches:
-      - main
-      - master
-  pull_request:
-    branches:
-      - main
-      - master
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      project_type:
+        description: 'flutter atau android'
+        required: true
+        default: 'flutter'
+      build_type:
+        description: 'debug atau release'
+        required: true
+        default: 'release'
+      zip_path:
+        description: 'path zip source di repo'
+        required: true
+        default: 'builds/source.zip'
 
 jobs:
   build:
-    name: Build APK
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Unzip source project
+        run: |
+          mkdir -p project
+          unzip -o "${{ github.event.inputs.zip_path }}" -d project
+
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Flutter
+      - name: Setup Flutter
+        if: ${{ github.event.inputs.project_type == 'flutter' }}
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
           channel: 'stable'
-          cache: true
 
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Build Flutter APK
+        if: ${{ github.event.inputs.project_type == 'flutter' }}
+        working-directory: project
+        run: |
+          flutter pub get
+          flutter build apk --${{ github.event.inputs.build_type }}
 
-      - name: Analyze project (optional, tidak menggagalkan build)
-        run: flutter analyze || true
+      - name: Build Android (Gradle) APK
+        if: ${{ github.event.inputs.project_type == 'android' }}
+        working-directory: project
+        run: |
+          chmod +x gradlew
+          if [ "${{ github.event.inputs.build_type }}" = "release" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
 
-      - name: Run tests (optional, tidak menggagalkan build)
-        run: flutter test || true
+      - name: Cari file APK hasil build
+        id: findapk
+        run: |
+          APK_PATH=$(find project -name "*.apk" | head -n 1)
+          echo "APK found at: $APK_PATH"
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
 
-      - name: Build APK (release)
-        run: flutter build apk --release
-
-      - name: Upload APK artifact
+      - name: Upload APK sebagai artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
+          name: result-apk
+          path: ${{ steps.findapk.outputs.apk_path }}
+          retention-days: 3
